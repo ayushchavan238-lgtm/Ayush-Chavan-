@@ -21,7 +21,7 @@ export default function SignUp() {
       
       toast.success('Account created successfully! You can now log in. (Mock)');
       navigate('/login');
-    } catch (error: any) {
+    } catch {
       toast.error('Failed to sign up');
     } finally {
       setIsLoading(false);

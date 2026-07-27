@@ -20,7 +20,7 @@ export default function Login() {
       
       toast.success('Logged in successfully (Mock)');
       navigate('/profile');
-    } catch (error: any) {
+    } catch {
       toast.error('Failed to login');
     } finally {
       setIsLoading(false);
