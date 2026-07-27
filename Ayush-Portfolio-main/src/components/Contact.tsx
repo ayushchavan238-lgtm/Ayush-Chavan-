@@ -1,8 +1,44 @@
-
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import toast from 'react-hot-toast';
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.id]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.from('contact_messages').insert([{
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message
+      }]);
+
+      if (error) throw error;
+      
+      toast.success('Message sent successfully!');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error: any) {
+      toast.error('Failed to send message: ' + error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section id="contact" className="py-20 bg-slate-900/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -72,13 +108,16 @@ export default function Contact() {
             transition={{ duration: 0.5 }}
             className="lg:col-span-3"
           >
-            <form className="bg-slate-900 p-8 rounded-xl border border-slate-800 space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="bg-slate-900 p-8 rounded-xl border border-slate-800 space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">Your Name</label>
                   <input
                     type="text"
                     id="name"
+                    required
+                    value={formData.name}
+                    onChange={handleChange}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                     placeholder="John Doe"
                   />
@@ -88,6 +127,9 @@ export default function Contact() {
                   <input
                     type="email"
                     id="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                     placeholder="john@example.com"
                   />
@@ -98,6 +140,9 @@ export default function Contact() {
                 <input
                   type="text"
                   id="subject"
+                  required
+                  value={formData.subject}
+                  onChange={handleChange}
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="Project Inquiry"
                 />
@@ -106,6 +151,9 @@ export default function Contact() {
                 <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-2">Message</label>
                 <textarea
                   id="message"
+                  required
+                  value={formData.message}
+                  onChange={handleChange}
                   rows={5}
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
                   placeholder="Hello, I'd like to talk about..."
@@ -113,10 +161,17 @@ export default function Contact() {
               </div>
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-primary transition-all shadow-lg shadow-primary/30"
+                disabled={isSubmitting}
+                className="w-full inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-primary transition-all shadow-lg shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send Message
-                <Send className="ml-2 -mr-1 h-5 w-5" />
+                {isSubmitting ? (
+                  <Loader2 className="animate-spin h-5 w-5" />
+                ) : (
+                  <>
+                    Send Message
+                    <Send className="ml-2 -mr-1 h-5 w-5" />
+                  </>
+                )}
               </button>
             </form>
           </motion.div>

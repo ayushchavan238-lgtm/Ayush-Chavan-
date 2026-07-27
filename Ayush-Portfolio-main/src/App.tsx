@@ -1,4 +1,5 @@
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -9,10 +10,15 @@ import Projects from './components/Projects';
 import Certifications from './components/Certifications';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import Profile from './pages/Profile';
+import { AuthProvider } from './contexts/AuthContext';
+import { ProfileProvider } from './contexts/ProfileContext';
 
-function App() {
+function Portfolio() {
   return (
-    <div className="relative min-h-screen">
+    <>
       <Navbar />
       <main>
         <Hero />
@@ -25,7 +31,33 @@ function App() {
         <Contact />
       </main>
       <Footer />
-    </div>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <ProfileProvider>
+        <Router>
+          <div className="relative min-h-screen">
+            <Routes>
+              <Route path="/" element={<Portfolio />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/profile" element={
+                <>
+                  <Navbar />
+                  <Profile />
+                  <Footer />
+                </>
+              } />
+            </Routes>
+            <Toaster position="bottom-right" />
+          </div>
+        </Router>
+      </ProfileProvider>
+    </AuthProvider>
   );
 }
 
