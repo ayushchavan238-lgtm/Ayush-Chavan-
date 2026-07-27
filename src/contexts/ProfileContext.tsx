@@ -1,6 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from './AuthContext';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 interface Profile {
@@ -27,84 +25,37 @@ interface ProfileContextType {
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<Profile | null>({
+    id: 'mock-user-1',
+    full_name: 'Ayush Chavan',
+    email: 'ayush@example.com',
+    avatar_url: null,
+    phone: '+1 (555) 123-4567',
+    location: 'San Francisco, CA',
+    bio: 'Full Stack Developer',
+    github: 'https://github.com/ayush',
+    linkedin: 'https://linkedin.com/in/ayush',
+    portfolio: 'https://ayush.dev',
+    resume_url: null
+  });
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      fetchProfile();
-    } else {
-      setProfile(null);
-    }
-  }, [user]);
-
-  const fetchProfile = async () => {
-    try {
-      setIsLoading(true);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user?.id)
-        .single();
-
-      if (error) throw error;
-      setProfile(data);
-    } catch (error: any) {
-      console.error('Error fetching profile:', error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const updateProfile = async (updates: Partial<Profile>) => {
-    try {
-      setIsLoading(true);
-      const { error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', user?.id);
-
-      if (error) throw error;
-      setProfile((prev) => (prev ? { ...prev, ...updates } : null));
-      toast.success('Profile updated successfully');
-    } catch (error: any) {
-      console.error('Error updating profile:', error.message);
-      toast.error('Failed to update profile');
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(true);
+    // Simulate network request
+    await new Promise(resolve => setTimeout(resolve, 500));
+    setProfile(prev => prev ? { ...prev, ...updates } : null);
+    toast.success('Profile updated successfully (Mock)');
+    setIsLoading(false);
   };
 
   const uploadAvatar = async (file: File) => {
-    try {
-      setIsLoading(true);
-      if (!user) throw new Error('No user logged in');
-
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${user.id}-${Math.random()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      await updateProfile({ avatar_url: data.publicUrl });
-      
-      return data.publicUrl;
-    } catch (error: any) {
-      console.error('Error uploading avatar:', error.message);
-      toast.error('Failed to upload avatar');
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 800));
+    const mockUrl = URL.createObjectURL(file);
+    await updateProfile({ avatar_url: mockUrl });
+    setIsLoading(false);
+    return mockUrl;
   };
 
   return (

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { LogIn, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
 export default function Login() {
@@ -16,17 +15,13 @@ export default function Login() {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
+      // Mock network request
+      await new Promise(resolve => setTimeout(resolve, 800));
       
-      toast.success('Logged in successfully');
+      toast.success('Logged in successfully (Mock)');
       navigate('/profile');
     } catch (error: any) {
-      toast.error(error.message || 'Failed to login');
+      toast.error('Failed to login');
     } finally {
       setIsLoading(false);
     }

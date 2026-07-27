@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
 export default function Contact() {
@@ -21,14 +20,8 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from('contact_messages').insert([{
-        name: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message
-      }]);
-
-      if (error) throw error;
+      // Mock network request
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       toast.success('Message sent successfully!');
       setFormData({ name: '', email: '', subject: '', message: '' });

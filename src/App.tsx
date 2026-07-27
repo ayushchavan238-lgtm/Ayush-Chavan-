@@ -1,4 +1,3 @@
-import { isSupabaseConfigured } from './lib/supabase';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
@@ -36,19 +35,7 @@ function Portfolio() {
   );
 }
 
-
 function App() {
-  if (!isSupabaseConfigured) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 text-center">
-        <h1 className="text-3xl font-bold text-white mb-4">Setup Required</h1>
-        <p className="text-slate-400 mb-6 max-w-md">
-          Please set your <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code> environment variables in your Vercel project settings (and locally in <code>.env.local</code>) to continue.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <AuthProvider>
       <ProfileProvider>

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { UserPlus, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
 export default function SignUp() {
@@ -17,22 +16,13 @@ export default function SignUp() {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: name,
-          }
-        }
-      });
-
-      if (error) throw error;
+      // Mock network request
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      toast.success('Account created successfully! You can now log in.');
+      toast.success('Account created successfully! You can now log in. (Mock)');
       navigate('/login');
     } catch (error: any) {
-      toast.error(error.message || 'Failed to sign up');
+      toast.error('Failed to sign up');
     } finally {
       setIsLoading(false);
     }
